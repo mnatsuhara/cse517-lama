@@ -24,7 +24,7 @@ cd model_download
 chmod +x <insert_script_for_model>
 ./<insert_script_for_model>
 ```
-The script wlil create and populate a <code>pretrained\_lms</code> directory with the chosen model to download.
+The script will create and populate a <code>pretrained\_lms</code> directory with the chosen model to download.
 
 To avoid exceeding disk space, download only one model at a time.  When finished working with a model, run 
 ```bash
@@ -33,43 +33,3 @@ To avoid exceeding disk space, download only one model at a time.  When finished
 to clear out any previously-downloaded models. 
 
 To build up the common vocabulary (intersection of all models' vocabularies), run ... TODO HERE! 
-
-# Models used for comparison
-* fairseq-fconv ([reference](http://proceedings.mlr.press/v70/dauphin17a/dauphin17a.pdf))
-    * Hyperparameters:
-        * Number of residual blocks
-        * Size of embedding
-        * Number of units
-        * kernel width
-* Transformer-XL ([reference](https://arxiv.org/pdf/1901.02860.pdf))
-    * Hyperparameters: 
-        * Batch size
-        * Upper epoch limit
-        * Number of tokens to predict (at training time vs. eval time)
-        * Length of retained previous heads
-        * Total number of layers
-        * Number of heads
-        * Head dimensions
-        * Embedding dimensions
-        * Model dimensions
-        * Inner dimentions in FF
-        * Global drop out rate
-        * Attention probability drop out rate
-        * Parameter initializer (also for embedding)
-        * Optimizer
-        * Learning rate
-* BERT ([reference](https://arxiv.org/pdf/1810.04805.pdf))
-    * Hyperparameters:
-        * Batch size (training vs. eval)
-        * Max sequence length
-        * Learning rate (Adam)
-        * Max number of masked LM predictions per sequence
-        * Number of epochs
-        * Number of training and warm-up steps
-        * Number of steps per estimator call
-        * Max number of eval steps
-* ELMo ([reference](https://www.aclweb.org/anthology/N18-1202.pdf))
-    * Hyperparameters:
-        * Drop out rate
-        * Learning rate
-        * ...
