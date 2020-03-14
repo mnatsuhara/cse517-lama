@@ -16,15 +16,19 @@ from os.path import isfile, join
 from shutil import copyfile
 from collections import defaultdict
 
-LMs = [
-    # {
-    #     "lm": "transformerxl",
-    #     "label": "transformerxl",
-    #     "models_names": ["transformerxl"],
-    #     "transformerxl_model_name": "transfo-xl-wt103",
-    #     "transformerxl_model_dir": "pre-trained_language_models/transformerxl/transfo-xl-wt103/",
-    # },
-    {
+parser = argparse.ArgumentParser()
+parser.add_argument("model", help="the model you want to run (all, transformerxl, gpt2-xl, elmo, elmo5B, bert_base, bert_large")
+args = parser.parse_args()
+
+LMs = {
+    'transformerxl' : {
+        "lm": "transformerxl",
+        "label": "transformerxl",
+        "models_names": ["transformerxl"],
+        "transformerxl_model_name": "transfo-xl-wt103",
+        "transformerxl_model_dir": "pre-trained_language_models/transformerxl/transfo-xl-wt103/",
+    },
+    'gpt2-xl' : {
         "lm": "gpt2-xl",
         "label": "gpt2-xl",
         "models_names": ["gpt2-xl"],
@@ -33,39 +37,39 @@ LMs = [
         "gpt_merges_file": "xl-merges.json",
         "gpt_model_dir": "pre-trained_language_models/gpt/gpt2-xl/",
     },
-    # {
-    #     "lm": "elmo",
-    #     "label": "elmo",
-    #     "models_names": ["elmo"],
-    #     "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway",
-    #     "elmo_vocab_name": "vocab-2016-09-10.txt",
-    #     "elmo_model_dir": "pre-trained_language_models/elmo/original",
-    #     "elmo_warm_up_cycles": 10,
-    # },
-    # {
-    #     "lm": "elmo",
-    #     "label": "elmo5B",
-    #     "models_names": ["elmo"],
-    #     "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway_5.5B",
-    #     "elmo_vocab_name": "vocab-enwiki-news-500000.txt",
-    #     "elmo_model_dir": "pre-trained_language_models/elmo/original5.5B/",
-    #     "elmo_warm_up_cycles": 10,
-    # },
-    # {
-    #     "lm": "bert",
-    #     "label": "bert_base",
-    #     "models_names": ["bert"],
-    #     "bert_model_name": "bert-base-cased",
-    #     "bert_model_dir": "pre-trained_language_models/bert/cased_L-12_H-768_A-12",
-    # },
-    # {
-    #     "lm": "bert",
-    #     "label": "bert_large",
-    #     "models_names": ["bert"],
-    #     "bert_model_name": "bert-large-cased",
-    #     "bert_model_dir": "pre-trained_language_models/bert/cased_L-24_H-1024_A-16",
-    # },
-]
+    'elmo' : {
+        "lm": "elmo",
+        "label": "elmo",
+        "models_names": ["elmo"],
+        "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway",
+        "elmo_vocab_name": "vocab-2016-09-10.txt",
+        "elmo_model_dir": "pre-trained_language_models/elmo/original",
+        "elmo_warm_up_cycles": 10,
+    },
+    'elmo5B' : {
+        "lm": "elmo",
+        "label": "elmo5B",
+        "models_names": ["elmo"],
+        "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway_5.5B",
+        "elmo_vocab_name": "vocab-enwiki-news-500000.txt",
+        "elmo_model_dir": "pre-trained_language_models/elmo/original5.5B/",
+        "elmo_warm_up_cycles": 10,
+    },
+    'bert_base' : {
+        "lm": "bert",
+        "label": "bert_base",
+        "models_names": ["bert"],
+        "bert_model_name": "bert-base-cased",
+        "bert_model_dir": "pre-trained_language_models/bert/cased_L-12_H-768_A-12",
+    },
+    'bert_large' : {
+        "lm": "bert",
+        "label": "bert_large",
+        "models_names": ["bert"],
+        "bert_model_name": "bert-large-cased",
+        "bert_model_dir": "pre-trained_language_models/bert/cased_L-24_H-1024_A-16",
+    },
+}
 
 
 def run_experiments(
@@ -215,22 +219,40 @@ def run_all_LMs(parameters):
         print(ip["label"])
         run_experiments(*parameters, input_param=ip, use_negated_probes=False)
 
+def run_specific_LM(parameters):
+    ip = LMs[args.model]
+    print(ip["label"])
+    run_experiments(*parameters, input_param=ip, use_negated_probes=False)
 
 if __name__ == "__main__":
+    if args.model not in LMs and not(args.model == "all"):
+        raise ValueError("Unrecognized Language Model: %s." % args.model)
 
     print("1. Google-RE")
     parameters = get_GoogleRE_parameters()
-    run_all_LMs(parameters)
+    if args.model == "all":
+        run_all_LMs(parameters)
+    else:
+        run_specific_LM(parameters)
 
-    # print("2. T-REx")
-    # parameters = get_TREx_parameters()
-    # run_all_LMs(parameters)
+    print("2. T-REx")
+    parameters = get_TREx_parameters()
+    if args.model == "all":
+        run_all_LMs(parameters)
+    else:
+        run_specific_LM(parameters)
 
-    # print("3. ConceptNet")
-    # parameters = get_ConceptNet_parameters()
-    # run_all_LMs(parameters)
+    print("3. ConceptNet")
+    parameters = get_ConceptNet_parameters()
+    if args.model == "all":
+        run_all_LMs(parameters)
+    else:
+        run_specific_LM(parameters)
 
-    # print("4. SQuAD")
-    # parameters = get_Squad_parameters()
-    # run_all_LMs(parameters)
+    print("4. SQuAD")
+    parameters = get_Squad_parameters()
+    if args.model == "all":
+        run_all_LMs(parameters)
+    else:
+        run_specific_LM(parameters)
 
