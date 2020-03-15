@@ -85,6 +85,7 @@ class Base_Connector():
 
     def try_cuda(self):
         """Move model to GPU if one is available."""
+        """
         if torch.cuda.is_available():
             if self._model_device != 'cuda':
                 print('Moving model to CUDA')
@@ -92,6 +93,8 @@ class Base_Connector():
                 self._model_device = 'cuda'
         else:
             print('No CUDA found')
+        """
+        print("CUDA bypassd")
 
     def _cuda(self):
         """Move model to GPU."""
