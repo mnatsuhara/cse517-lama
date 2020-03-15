@@ -15,22 +15,6 @@ DST_DIR="$ROOD_DIR/pre-trained_language_models"
 mkdir -p "$DST_DIR"
 cd "$DST_DIR"
 
-echo "BERT LARGE LOWERCASED"
-if [[ ! -f bert/uncased_L-24_H-1024_A-16/bert_config.json ]]; then
-  mkdir -p 'bert'
-  cd bert
-  wget -c "https://storage.googleapis.com/bert_models/2018_10_18/uncased_L-24_H-1024_A-16.zip"
-  unzip uncased_L-24_H-1024_A-16.zip
-  rm uncased_L-24_H-1024_A-16.zip
-  cd uncased_L-24_H-1024_A-16
-  wget -c "https://s3.amazonaws.com/models.huggingface.co/bert/bert-large-uncased.tar.gz"
-  tar -xzf bert-large-uncased.tar.gz
-  rm bert-large-uncased.tar.gz
-  rm bert_model*
-  cd ../../
-fi
-
-
 echo 'cased models'
 echo 'Transformer XL'
 if [[ ! -f 'transformerxl/transfo-xl-wt103/config.json' ]]; then
