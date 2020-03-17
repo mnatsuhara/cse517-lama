@@ -136,12 +136,15 @@ def run_experiments(
         print(PARAMETERS)
 
         args = argparse.Namespace(**PARAMETERS)
+        relation_name = relation["relation"]
+        if relation_name == "test":
+            relation_name = data_path_pre.replace("/", "") + "_test"
 
         # see if file exists
         try:
             data = load_file(args.dataset_filename)
         except Exception as e:
-            print("Relation {} excluded.".format(relation["relation"]))
+            print("Relation {} excluded.".format(relation["relation_name"]))
             print("Exception: {}".format(e))
             continue
 
@@ -155,7 +158,7 @@ def run_experiments(
         all_Precision10.append(Precision10)
 
         results_file.write(
-            "[{}] {}: {}, P10 = {}, P1 = {}\n".format(datetime.now(), input_param["label"], relation["relation"],
+            "[{}] {}: {}, P10 = {}, P1 = {}\n".format(datetime.now(), input_param["label"], relation["relation_name"],
                                                       round(Precision10 * 100, 2), round(Precision1 * 100, 2))
         )
         results_file.flush()
