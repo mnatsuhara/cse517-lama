@@ -27,6 +27,17 @@ CASED_MODELS = [
     "transformerxl_model_dir": "pre-trained_language_models/transformerxl/transfo-xl-wt103/",
   },
   {
+    # GPT2
+    "lm": "gpt2-xl",
+    "gpt_model_name": "gpt2-xl",
+    "gpt_model_dir": "pre-trained_language_models/gpt/gpt2-xl/",
+  },  
+  # {
+  #     "lm": "roberta",
+  #     "gpt_model_name": "roberta",
+  #     "gpt_model_dir": "pre-trained_language_models/roberta/large/",
+  # },
+  {
     # "ELMO ORIGINAL"
     "lm": "elmo",
     "elmo_model_dir": "pre-trained_language_models/elmo/original",

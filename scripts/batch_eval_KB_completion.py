@@ -3,6 +3,7 @@
 #
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
+#
 from lama.modules import build_model_by_name
 import lama.utils as utils
 from lama.utils import print_sentence_predictions, load_vocab
@@ -149,8 +150,8 @@ def batchify_negated(data, batch_size):
 def run_thread(arguments):
     msg = 'Masked sentences:\n'
     for masked_sentence in arguments["sample"]["masked_sentences"]:
-        msg += f'{masked_sentence}\n'
-    msg = f'Expected Label: {arguments["sample"]["obj_label"]}'
+        msg += f'    {masked_sentence}\n'
+    msg += f'Expected Label: {arguments["sample"]["obj_label"]}'
 
     # 1. compute the ranking metrics on the filtered log_probs tensor
     sample_MRR, sample_P, experiment_result, return_msg = metrics.get_ranking(
@@ -270,8 +271,8 @@ def filter_samples(model, samples, vocab_subset, max_sentence_length, template):
                 )
                 samples_exluded += 1
             elif not recostructed_word or recostructed_word != sample["obj_label"]:
-                msg += "\tEXCLUDED object label {} not in model vocabulary\n".format(
-                    sample["obj_label"]
+                msg += "\tEXCLUDED object label {} does not equal reconstructed word{}\n".format(
+                    sample["obj_label"], recostructed_word
                 )
                 samples_exluded += 1
             # elif vocab_subset is not None and sample['obj_label'] not in vocab_subset:
@@ -294,7 +295,7 @@ def filter_samples(model, samples, vocab_subset, max_sentence_length, template):
             else:
                 new_samples.append(sample)
         else:
-            msg += "\tEXCLUDED since 'obj_label' not sample or 'sub_label' not in sample: {}\n".format(
+            msg += "\tEXCLUDED since sample does not contain both 'obj_label' 'sub_label' fields: {}\n".format(
                 sample
             )
             samples_exluded += 1
@@ -457,7 +458,6 @@ def main(args, shuffle_data=True, model=None):
     if num_threads <= 0:
         # use all available threads
         num_threads = multiprocessing.cpu_count()
-    print(f"Number of threads in batch_eval_completion: {num_threads}")
     pool = ThreadPool(num_threads)
     list_of_results = []
 
@@ -493,7 +493,7 @@ def main(args, shuffle_data=True, model=None):
                 )
             elif model.vocab[obj_label_id[0]] != sample["obj_label"]:
                 raise ValueError(
-                    "object label {} not in model vocabulary".format(
+                    "object label {} not not matched by ID in model vocabulary".format(
                         sample["obj_label"]
                     )
                 )
@@ -608,7 +608,7 @@ def main(args, shuffle_data=True, model=None):
             # print()
 
             if args.use_negated_probes:
-                overlap, spearman, msg = res_negated[idx]
+                spearman, overlap, msg = res_negated[idx]
                 # sum overlap and spearmanr if not nan
                 if spearman == spearman:
                     element["spearmanr"] = spearman
@@ -699,7 +699,7 @@ def main(args, shuffle_data=True, model=None):
     with open("{}/result.pkl".format(log_directory), "wb") as f:
         pickle.dump(all_results, f)
 
-    return Precision1
+    return Precision1, Precision
 
 
 if __name__ == "__main__":

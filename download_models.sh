@@ -15,6 +15,51 @@ DST_DIR="$ROOD_DIR/pre-trained_language_models"
 mkdir -p "$DST_DIR"
 cd "$DST_DIR"
 
+
+echo "lowercase models"
+echo "OpenAI GPT"
+if [[ ! -f gpt/openai-gpt/config.json ]]; then
+  rm -rf 'gpt/openai-gpt'
+  mkdir -p 'gpt/openai-gpt'
+  cd 'gpt/openai-gpt'
+  wget 'https://s3.amazonaws.com/models.huggingface.co/bert/openai-gpt-vocab.json' -O vocab.json
+  wget 'https://s3.amazonaws.com/models.huggingface.co/bert/openai-gpt-merges.txt' -O merges.txt
+  wget -c 'https://s3.amazonaws.com/models.huggingface.co/bert/openai-gpt-pytorch_model.bin' -O 'pytorch_model.bin'
+  wget -c 'https://s3.amazonaws.com/models.huggingface.co/bert/openai-gpt-config.json' -O 'config.json'
+  cd ../..
+fi
+
+echo "BERT BASE LOWERCASED"
+if [[ ! -f bert/uncased_L-12_H-768_A-12/bert_config.json ]]; then
+  mkdir -p 'bert'
+  cd bert
+  wget -c "https://storage.googleapis.com/bert_models/2018_10_18/uncased_L-12_H-768_A-12.zip"
+  unzip uncased_L-12_H-768_A-12.zip
+  rm uncased_L-12_H-768_A-12.zip
+  cd uncased_L-12_H-768_A-12
+  wget -c "https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased.tar.gz"
+  tar -xzf bert-base-uncased.tar.gz
+  rm bert-base-uncased.tar.gz
+  rm bert_model*
+  cd ../../
+fi
+
+echo "BERT LARGE LOWERCASED"
+if [[ ! -f bert/uncased_L-24_H-1024_A-16/bert_config.json ]]; then
+  mkdir -p 'bert'
+  cd bert
+  wget -c "https://storage.googleapis.com/bert_models/2018_10_18/uncased_L-24_H-1024_A-16.zip"
+  unzip uncased_L-24_H-1024_A-16.zip
+  rm uncased_L-24_H-1024_A-16.zip
+  cd uncased_L-24_H-1024_A-16
+  wget -c "https://s3.amazonaws.com/models.huggingface.co/bert/bert-large-uncased.tar.gz"
+  tar -xzf bert-large-uncased.tar.gz
+  rm bert-large-uncased.tar.gz
+  rm bert_model*
+  cd ../../
+fi
+
+
 echo 'cased models'
 echo 'Transformer XL'
 if [[ ! -f 'transformerxl/transfo-xl-wt103/config.json' ]]; then
@@ -38,6 +83,18 @@ if [[ ! -f gpt2/xl/config.json ]]; then
   wget 'https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-xl-merges.txt' -O merges.txt
   wget -c 'https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-xl-pytorch_model.bin' -O 'pytorch_model.bin'
   wget -c 'https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-xl-config.json' -O 'config.json'
+  cd ../..
+fi
+
+echo "Roberta"
+if [[ ! -f roberta/large/config.json ]]; then
+  rm -rf 'roberta/large'
+  mkdir -p 'roberta/large'
+  cd 'roberta/large'
+  wget 'https://s3.amazonaws.com/models.huggingface.co/bert/roberta-large-vocab.json' -O vocab.json
+  wget 'https://s3.amazonaws.com/models.huggingface.co/bert/roberta-large-merges.txt' -O merges.txt
+  wget -c 'https://s3.amazonaws.com/models.huggingface.co/bert/roberta-large-pytorch_model.bin' -O 'pytorch_model.bin'
+  wget -c 'https://s3.amazonaws.com/models.huggingface.co/bert/roberta-large-config.json' -O 'config.json'
   cd ../..
 fi
 

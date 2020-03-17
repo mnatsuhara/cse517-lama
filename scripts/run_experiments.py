@@ -7,6 +7,7 @@
 import argparse
 from batch_eval_KB_completion import main as run_evaluation
 from batch_eval_KB_completion import load_file
+from datetime import datetime
 from lama.modules import build_model_by_name
 import pprint
 import statistics
@@ -69,6 +70,14 @@ LMs = {
         "bert_model_name": "bert-large-cased",
         "bert_model_dir": "pre-trained_language_models/bert/cased_L-24_H-1024_A-16",
     },
+    # 'roberta' : {
+    #     "lm": "roberta",
+    #     "label": "roberta",
+    #     "models_names": ["roberta"],
+    #     "roberta_model_name": "pytorch_model.bin",
+    #     "roberta_vocab_name": "vocab.json",
+    #     "roberta_model_dir": "pre-trained_language_models/roberta/large/",
+    # },
 }
 
 
@@ -89,10 +98,13 @@ def run_experiments(
     pp = pprint.PrettyPrinter(width=41, compact=True)
 
     all_Precision1 = []
+    all_Precision10 = []
     type_Precision1 = defaultdict(list)
     type_count = defaultdict(list)
 
-    results_file = open("last_results.csv", "w+")
+    # Append to results_file
+    results_file = open("last_results.csv", "a", encoding='utf-8')
+    results_file.write('\n')
 
     for relation in relations:
         pp.pprint(relation)
@@ -137,12 +149,14 @@ def run_experiments(
             [model_type_name] = args.models_names
             model = build_model_by_name(model_type_name, args)
 
-        Precision1 = run_evaluation(args, shuffle_data=False, model=model)
+        Precision1, Precision10 = run_evaluation(args, shuffle_data=False, model=model)
         print("P@1 : {}".format(Precision1), flush=True)
         all_Precision1.append(Precision1)
+        all_Precision10.append(Precision10)
 
         results_file.write(
-            "{},{}\n".format(relation["relation"], round(Precision1 * 100, 2))
+            "[{}] {}: {}, P10 = {}, P1 = {}\n".format(datetime.now(), input_param["label"], relation["relation"],
+                                                      round(Precision10 * 100, 2), round(Precision1 * 100, 2))
         )
         results_file.flush()
 
@@ -152,21 +166,19 @@ def run_experiments(
             type_count[relation["type"]].append(len(data))
 
     mean_p1 = statistics.mean(all_Precision1)
-    print("@@@ {} - mean P@1: {}".format(input_param["label"], mean_p1))
-    results_file.close()
+    mean_p10 = statistics.mean(all_Precision10)
+    summaryP1 = "@@@ {} - mean P@10 = {}, mean P@1 = {}".format(input_param["label"], round(mean_p10 * 100, 2), round(mean_p1 * 100, 2))
+    print(summaryP1)
+    results_file.write(f'{summaryP1}\n')
+    results_file.flush()
 
     for t, l in type_Precision1.items():
+        prec1item = f'@@@ Label={input_param["label"]}, type={t}, samples={sum(type_count[t])}, relations={len(type_count[t])}, mean prec1={round(statistics.mean(l) * 100, 2)}\n'
+        print (prec1item, flush=True)
+        results_file.write(prec1item)
+        results_file.flush()
 
-        print(
-            "@@@ ",
-            input_param["label"],
-            t,
-            statistics.mean(l),
-            sum(type_count[t]),
-            len(type_count[t]),
-            flush=True,
-        )
-
+    results_file.close()
     return mean_p1, all_Precision1
 
 
